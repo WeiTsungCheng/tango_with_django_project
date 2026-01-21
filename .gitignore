@@ -3,3 +3,4 @@ __pycache__/
 *.psy
 .DS_Store
 .idea/
+tests/
