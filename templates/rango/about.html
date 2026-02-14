@@ -1,24 +1,44 @@
-<!DOCTYPE html>
 
+{% extends "rango/base.html" %}
 {% load staticfiles %}
 
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Index</title>
-</head>
-<body>
+{% block title_block %}
+    About Rango
+{% endblock %}
+
+{% block body_block %}
 <div>
     Rango says here is the about page.<br />
     This tutorial has been put together by <br />
 </div>
 <div>
-    <a href="{% url 'rango:index' %}">Index</a>
-<!--    <a href="/rango/">Index</a>-->
-
     <img src="{% static 'images/rango.jpg' %}" alt="Picture of Rango" />
     <img src="/media/cat.jpg" alt="Picture of a Cat" />
-
 </div>
-</body>
-</html>
+{% endblock %}
+
+
+<!--<!DOCTYPE html>-->
+
+<!--{% load staticfiles %}-->
+
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <title>Index</title>-->
+<!--</head>-->
+<!--<body>-->
+<!--<div>-->
+<!--    Rango says here is the about page.<br />-->
+<!--    This tutorial has been put together by <br />-->
+<!--</div>-->
+<!--<div>-->
+<!--    <a href="{% url 'rango:index' %}">Index</a>-->
+<!--&lt;!&ndash;    <a href="/rango/">Index</a>&ndash;&gt;-->
+
+<!--    <img src="{% static 'images/rango.jpg' %}" alt="Picture of Rango" />-->
+<!--    <img src="/media/cat.jpg" alt="Picture of a Cat" />-->
+
+<!--</div>-->
+<!--</body>-->
+<!--</html>-->
