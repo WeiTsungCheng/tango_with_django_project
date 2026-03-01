@@ -53,7 +53,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rango'
+    'rango',
+    'registration'
 ]
 
 MIDDLEWARE = [
@@ -138,4 +139,10 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
-LOGIN_URL = 'rango:login' # 所有沒有登入的 user 會導向到這位置
+# LOGIN_URL = 'rango:login' # 所有沒有登入的 user 會導向到這位置 # registration app 也用這個作為沒有登入的導向位置
+
+REGISTRATION_OPEN = True
+REGISTRATION_AUTO_LOGIN = True
+LOGIN_REDIRECT_URL = 'rango:index'
+LOGIN_URL = 'auth_login'
+
