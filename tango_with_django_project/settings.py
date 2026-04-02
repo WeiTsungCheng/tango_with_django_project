@@ -54,7 +54,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rango',
-    'registration'
+    'registration' # Add in the registration package
 ]
 
 MIDDLEWARE = [
@@ -141,8 +141,14 @@ STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 # LOGIN_URL = 'rango:login' # 所有沒有登入的 user 會導向到這位置 # registration app 也用這個作為沒有登入的導向位置
 
+# If True, users can register.
 REGISTRATION_OPEN = True
+# If True, the user will be automatically logged in after registering.
 REGISTRATION_AUTO_LOGIN = True
+# The page users are directed to if they are not logged in.
+# This was set in a previous chapter. The registration package uses this, too.
 LOGIN_REDIRECT_URL = 'rango:index'
+# The page users are directed to if they are not logged in.
+# This was set in a previous chapter. The registration package uses this, too.
 LOGIN_URL = 'auth_login'
 
