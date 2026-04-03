@@ -58,15 +58,27 @@ def about(request):
     # return HttpResponse("Rango says here is the about page.<a href='/rango'>Index</a>")
 
 def show_category(request, category_name_slug):
+    result_list = []
+    query = ''
+
     context_dict = {}
     try:
         category = Category.objects.get(slug=category_name_slug)
-        pages = Page.objects.filter(category=category)
+
+        if request.method == 'POST' and request.user.is_authenticated:
+            query = request.POST.get('query', '').strip()
+            if query:
+                result_list = run_query(query)
+
+        pages = Page.objects.filter(category=category).order_by('-views')
         context_dict['category'] = category
         context_dict['pages'] = pages
     except Category.DoesNotExist:
         context_dict['category'] = None
         context_dict['pages'] = None
+
+    context_dict['result_list'] = result_list
+    context_dict['query'] = query
 
     return render(request, 'rango/category.html', context_dict)
 
@@ -207,15 +219,27 @@ def visitor_cookie_handler(request):
 
     return
 
-def search(request):
-    result_list = []
-    query = ''
-    if request.method == 'POST':
-        query = request.POST.get('query', '').strip()
-        if query:
-            result_list = run_query(query)
-    return render(
-        request,
-        'rango/search.html',
-        {'result_list': result_list, 'query': query},
-    )
+# def search(request):
+#     result_list = []
+#     query = ''
+#     if request.method == 'POST':
+#         query = request.POST.get('query', '').strip()
+#         if query:
+#             result_list = run_query(query)
+#     return render(
+#         request,
+#         'rango/search.html',
+#         {'result_list': result_list, 'query': query},
+#     )
+
+def goto_url(request):
+    page_id = request.GET.get('page_id')
+    if page_id is None:
+        return redirect(reverse('rango:index'))
+    try: 
+        page = Page.objects.get(id=int(page_id))
+    except (ValueError, Page.DoesNotExist):
+        return redirect(reverse('rango:index'))
+    page.views += 1
+    page.save()
+    return redirect(page.url)
