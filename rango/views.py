@@ -13,6 +13,7 @@ from django.urls import reverse
 
 from rango.forms import UserForm, UserProfileForm
 from datetime import datetime
+from rango.bing_search import run_query
 
 def index(request):
     # context_dict = {
@@ -205,3 +206,16 @@ def visitor_cookie_handler(request):
     # response.set_cookie('visits', visits)
 
     return
+
+def search(request):
+    result_list = []
+    query = ''
+    if request.method == 'POST':
+        query = request.POST.get('query', '').strip()
+        if query:
+            result_list = run_query(query)
+    return render(
+        request,
+        'rango/search.html',
+        {'result_list': result_list, 'query': query},
+    )
