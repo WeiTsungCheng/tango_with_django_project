@@ -61,12 +61,20 @@ def show_category(request, category_name_slug):
     context_dict = {}
     try:
         category = Category.objects.get(slug=category_name_slug)
-        pages = Page.objects.filter(category=category)
-        context_dict['category'] = category
+        pages = Page.objects.filter(category=category).order_by('-views')
         context_dict['pages'] = pages
+        context_dict['category'] = category
     except Category.DoesNotExist:
         context_dict['category'] = None
         context_dict['pages'] = None
+
+    # Start new search functionality code.
+    if request.method == 'POST' and request.user.is_authenticated:
+        query = request.POST['query'].strip()
+        if query:
+            context_dict['result_list'] = run_query(query)
+        context_dict['query'] = query
+    # End new search functionality code.
 
     return render(request, 'rango/category.html', context_dict)
 
@@ -207,15 +215,15 @@ def visitor_cookie_handler(request):
 
     return
 
-def search(request):
-    result_list = []
-    query = ''
-    if request.method == 'POST':
-        query = request.POST.get('query', '').strip()
-        if query:
-            result_list = run_query(query)
-    return render(
-        request,
-        'rango/search.html',
-        {'result_list': result_list, 'query': query},
-    )
+
+def goto_url(request):
+    if request.method == 'GET':
+        page_id = request.GET.get('page_id')
+        try:
+            selected_page = Page.objects.get(id=page_id)
+        except Page.DoesNotExist:
+            return redirect(reverse('rango:index'))
+        selected_page.views = selected_page.views + 1
+        selected_page.save()
+        return redirect(selected_page.url)
+    return redirect(reverse('rango:index'))
