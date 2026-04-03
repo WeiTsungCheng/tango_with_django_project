@@ -1,0 +1,24 @@
+{% extends "rango/base.html" %}
+
+{% block title_block %}
+    Users
+{% endblock %}
+
+{% block body_block %}
+<div class="jumbotron p-4">
+    <div class="container">
+        <h1 class="jumbotron-heading">User List</h1>
+        {% if user_list %}
+        <ul class="list-group">
+            {% for u in user_list %}
+            <li class="list-group-item">
+                <a href="{% url 'rango:profile' u.username %}">{{ u.username }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p>There are no users.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

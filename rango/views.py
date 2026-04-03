@@ -1,7 +1,8 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.contrib.auth.models import User
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponse, HttpResponseForbidden
 
 
 from rango.models import Category
@@ -14,6 +15,8 @@ from django.urls import reverse
 from rango.forms import UserForm, UserProfileForm
 from datetime import datetime
 from rango.bing_search import run_query
+
+from rango.models import UserProfile
 
 def index(request):
     # context_dict = {
@@ -243,3 +246,63 @@ def goto_url(request):
     page.views += 1
     page.save()
     return redirect(page.url)
+
+@login_required
+def register_profile(request):
+    profile, _ = UserProfile.objects.get_or_create(user=request.user)
+
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save(commit=True)
+            return redirect(reverse('rango:index'))
+        else:
+            print(form.errors)
+    else:
+        form = UserProfileForm(instance=profile)
+
+    context_dict = {'form': form}
+    return render(request, 'rango/profile_registration.html', context_dict)
+
+
+@login_required
+def list_users(request):
+    user_list = User.objects.all().order_by('username')
+    return render(request, 'rango/users.html', {'user_list': user_list})
+
+
+@login_required
+def profile(request, username):
+    user = get_object_or_404(User, username=username)
+    user_profile = None
+    try:
+        user_profile = UserProfile.objects.get(user=user)
+    except UserProfile.DoesNotExist:
+        pass
+
+    is_own_profile = request.user.username == username
+    form = None
+
+    if request.method == 'POST':
+        if not is_own_profile:
+            return HttpResponseForbidden('You can only edit your own profile.')
+        profile_obj, _ = UserProfile.objects.get_or_create(user=request.user)
+        form = UserProfileForm(request.POST, request.FILES, instance=profile_obj)
+        if form.is_valid():
+            form.save(commit=True)
+            return redirect(reverse('rango:profile', kwargs={'username': username}))
+        print(form.errors)
+        user_profile = profile_obj
+    elif is_own_profile:
+        profile_obj, _ = UserProfile.objects.get_or_create(user=request.user)
+        form = UserProfileForm(instance=profile_obj)
+        user_profile = profile_obj
+
+    context_dict = {
+        'selected_user': user,
+        'user_profile': user_profile,
+        'form': form,
+        'is_own_profile': is_own_profile,
+    }
+    return render(request, 'rango/profile.html', context_dict)
+

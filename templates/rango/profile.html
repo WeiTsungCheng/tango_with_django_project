@@ -1,0 +1,46 @@
+{% extends "rango/base.html" %}
+{% load staticfiles %}
+
+{% block title_block %}
+    Profile for {{ selected_user.username }}
+{% endblock %}
+
+{% block body_block %}
+<div class="jumbotron p-4">
+    <div class="container">
+        <h1 class="jumbotron-heading">{{ selected_user.username }}'s Profile</h1>
+        <p><strong>Email:</strong> {{ selected_user.email|default:"-" }}</p>
+        <p><strong>Website:</strong>
+            {% if user_profile and user_profile.website %}
+                <a href="{{ user_profile.website }}">{{ user_profile.website }}</a>
+            {% else %}
+                -
+            {% endif %}
+        </p>
+        {% if user_profile and user_profile.picture %}
+        <p><strong>Picture:</strong><br>
+            <img src="{{ user_profile.picture.url }}" alt="{{ selected_user.username }}'s profile image" class="img-fluid" style="max-width: 320px;">
+        </p>
+        {% else %}
+        <p><strong>Picture:</strong> No picture uploaded.</p>
+        {% endif %}
+
+        {% if is_own_profile %}
+        <hr>
+        <h2>Edit your profile</h2>
+        <form method="post" action="{% url 'rango:profile' selected_user.username %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            {% for field in form.visible_fields %}
+                {{ field.errors }}
+                {% if field.help_text %}
+                <small class="form-text text-muted">{{ field.help_text }}</small>
+                {% endif %}
+                {{ field }}
+                <div class="p-2"></div>
+            {% endfor %}
+            <button class="btn btn-primary" type="submit">Update Profile</button>
+        </form>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

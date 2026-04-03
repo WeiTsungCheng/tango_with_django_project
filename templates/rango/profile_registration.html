@@ -1,0 +1,47 @@
+
+{% extends "rango/base.html" %}
+{% load staticfiles %}
+
+{% block title_block %}
+    Register Profile
+{% endblock %}
+
+{% block body_block %}
+<style>
+  .form-signin {
+    max-width: 520px;
+    width: 100%;
+    margin: 0 auto;
+  }
+  .form-signin .form-control {
+    width: 100%;
+  }
+</style>
+
+<div class="jumbotron p-4">
+    <div class="container">
+        <h1 class="jumbotron-heading">Setup Your Profile</h1>
+        <div class="container">
+            <form class="form-signin" role="form" method="post"
+                  action="{% url 'rango:register_profile' %}"
+                  enctype="multipart/form-data">
+                {% csrf_token %}
+                {% for hidden in form.hidden_fields %}
+                    {{ hidden }}
+                {% endfor %}
+                {% for field in form.visible_fields %}
+                    {{ field.errors }}
+                    {% if field.help_text %}
+                    <small class="form-text text-muted">{{ field.help_text }}</small>
+                    {% endif %}
+                    {{ field }}
+                    <div class="p-2"></div>
+                {% endfor %}
+                <button class="btn btn-lg btn-primary btn-block" type="submit" name="submit">
+                    Create Profile
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

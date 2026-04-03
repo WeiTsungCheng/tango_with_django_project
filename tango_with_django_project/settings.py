@@ -152,3 +152,6 @@ LOGIN_REDIRECT_URL = 'rango:index'
 # This was set in a previous chapter. The registration package uses this, too.
 LOGIN_URL = 'auth_login'
 
+# django-registration-redux 的設定
+# 當用戶註冊成功後，導向到 /rango/register_profile/ 頁面
+SIMPLE_BACKEND_REDIRECT_URL = '/rango/register_profile/'
