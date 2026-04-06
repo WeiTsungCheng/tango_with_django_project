@@ -14,6 +14,7 @@ urlpatterns = [
 
     path('register_profile/', views.RegisterProfileView.as_view(), name='register_profile'),
     path('profile/<username>/', views.ProfileView.as_view(), name='profile'),
+    path('profiles/', views.ListProfilesView.as_view(), name='list_profiles'),
     path('goto/', views.GotoUrlView.as_view(), name='goto'),
     path('restricted/', views.RestrictedView.as_view(), name='restricted'),
 ]

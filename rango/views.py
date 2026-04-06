@@ -236,6 +236,17 @@ class RestrictedView(View):
         return render(request, 'rango/restricted.html')
 
 
+class ListProfilesView(View):
+    @method_decorator(login_required)
+    def get(self, request):
+        profiles = UserProfile.objects.all()
+        return render(
+            request,
+            'rango/list_profiles.html',
+            {'userprofile_list': profiles},
+        )
+
+
 class ProfileView(View):
     def get_user_details(self, username):
         try:
