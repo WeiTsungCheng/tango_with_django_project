@@ -9,8 +9,17 @@ class Category(models.Model):
     slug = models.SlugField(blank=True, unique=True)
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.name)
-        super(Category, self).save(*args, **kwargs)
+        generated_slug = slugify(self.name)
+        if generated_slug:
+            self.slug = generated_slug
+            super(Category, self).save(*args, **kwargs)
+            return
+
+        # Fallback for names that become empty after slugify (e.g. non-ASCII only).
+        if self.pk is None:
+            super(Category, self).save(*args, **kwargs)
+        self.slug = f'category-{self.pk}'
+        super(Category, self).save(update_fields=['slug'])
 
     class Meta:
         verbose_name_plural = 'categories'
