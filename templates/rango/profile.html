@@ -14,10 +14,19 @@
 
 <div class="container">
     <div class="row">
-        <img src="{{ MEDIA_URL }}{{ user_profile.picture }}"
-             width="300"
-             height="300"
-             alt="{{ selected_user.username }}'s profile image" />
+        {% if user_profile.picture %}
+            <img src="{{ MEDIA_URL }}{{ user_profile.picture }}"
+                 width="300"
+                 height="300"
+                 class="rounded mb-2"
+                 alt="{{ selected_user.username }}'s profile image" />
+        {% else %}
+            <img src="{% static 'images/default-avatar.svg' %}"
+                 width="300"
+                 height="300"
+                 class="rounded mb-2"
+                 alt="{{ selected_user.username }} has not uploaded a profile image" />
+        {% endif %}
         <br />
         <div>
             {% if selected_user == user %}

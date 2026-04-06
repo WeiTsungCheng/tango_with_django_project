@@ -18,8 +18,21 @@
             <div class="panel-body">
                 <div class="list-group">
                     {% for list_user in userprofile_list %}
-                        <div class="list-group-item">
-                            <h4 class="list-group-item-heading">
+                        <div class="list-group-item d-flex align-items-center">
+                            {% if list_user.picture %}
+                                <img src="{{ MEDIA_URL }}{{ list_user.picture }}"
+                                     width="64"
+                                     height="64"
+                                     class="rounded mr-3 flex-shrink-0"
+                                     alt="{{ list_user.user.username }}'s profile picture" />
+                            {% else %}
+                                <img src="{% static 'images/default-avatar.svg' %}"
+                                     width="64"
+                                     height="64"
+                                     class="rounded mr-3 flex-shrink-0"
+                                     alt="No profile picture for {{ list_user.user.username }}" />
+                            {% endif %}
+                            <h4 class="list-group-item-heading mb-0">
                                 <a href="{% url 'rango:profile' list_user.user.username %}">{{ list_user.user.username }}</a>
                             </h4>
                         </div>
