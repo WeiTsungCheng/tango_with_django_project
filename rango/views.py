@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
 
@@ -120,6 +121,22 @@ class AddCategoryView(View):
             print(form.errors)
         return render(request, 'rango/add_category.html', {'form': form})
 
+class LikeCategoryView(View):
+    @method_decorator(login_required)
+    def get(self, request):
+        category_id = request.GET.get('category_id')
+
+        try:
+            category = Category.objects.get(id=int(category_id))
+        except Category.DoesNotExist:
+            return HttpResponse(-1)
+        except ValueError:
+            return HttpResponse(-1)
+        category.likes += 1
+        category.save()
+
+        return HttpResponse(category.likes)
+
 
 class AddPageView(View):
     @method_decorator(login_required)
@@ -156,6 +173,33 @@ class AddPageView(View):
         context_dict = {'form': form, 'category': category}
         return render(request, 'rango/add_page.html', context=context_dict)
 
+class CategorySuggestionView(View):
+    def get(self, request):
+        if 'suggestion' in request.GET:
+            suggestion = request.GET['suggestion']
+        else:
+            suggestion = ''
+
+        category_list = get_category_list(max_results=8, starts_with=suggestion)
+
+        if len(category_list) == 0:
+            category_list = Category.objects.order_by('-likes')
+
+        return render(request,
+                      'rango/categories.html',
+                      {'categories': category_list})
+
+# Helper
+
+def get_category_list(max_results=0, starts_with=''):
+    category_list = []
+    if starts_with:
+        category_list = Category.objects.filter(name__istartswith=starts_with)
+        if max_results > 0:
+            if len(category_list) > max_results:
+                category_list = category_list[:max_results]
+
+    return category_list
 
 # def register(request):
 #     registered = False
@@ -321,3 +365,5 @@ class GotoUrlView(View):
         selected_page.views = selected_page.views + 1
         selected_page.save()
         return redirect(selected_page.url)
+
+

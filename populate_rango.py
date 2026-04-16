@@ -25,6 +25,12 @@ def populate():
         'Python': {'pages': python_pages, 'views': 128, 'likes': 64},
         'Django': {'pages': django_pages, 'views': 64, 'likes': 32},
         'Other Frameworks': {'pages': other_pages, 'views': 32, 'likes': 16},
+        'Pascal': {'pages': [], 'views': 0, 'likes': 0},
+        'Perl': {'pages': [], 'views': 0, 'likes': 0},
+        'PHP': {'pages': [], 'views': 0, 'likes': 0},
+        'Prolog': {'pages': [], 'views': 0, 'likes': 0},
+        'PostScript': {'pages': [], 'views': 0, 'likes': 0},
+        'Programming': {'pages': [], 'views': 0, 'likes': 0},
     }
     for cat, cat_data in cats.items():
         c = add_cat(cat, cat_data['views'], cat_data['likes'])
@@ -41,7 +47,9 @@ def add_page(cat, title, url, views):
     p.save()
     return p
 def add_cat(name, views, likes):
-    c = Category.objects.get_or_create(name=name, views=views, likes=likes)[0]
+    c = Category.objects.get_or_create(name=name)[0]
+    c.views = views
+    c.likes = likes
     c.save()
     return c
 

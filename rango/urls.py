@@ -17,4 +17,6 @@ urlpatterns = [
     path('profiles/', views.ListProfilesView.as_view(), name='list_profiles'),
     path('goto/', views.GotoUrlView.as_view(), name='goto'),
     path('restricted/', views.RestrictedView.as_view(), name='restricted'),
+    path('like_category/', views.LikeCategoryView.as_view(), name='like_category'),
+    path('suggest/', views.CategorySuggestionView.as_view(), name='suggest'),
 ]
