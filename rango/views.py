@@ -189,6 +189,28 @@ class CategorySuggestionView(View):
                       'rango/categories.html',
                       {'categories': category_list})
 
+
+class SearchAddPageView(View):
+    @method_decorator(login_required)
+    def get(self, request):
+        category_id = request.GET.get('category_id')
+        title = request.GET.get('title')
+        url = request.GET.get('url')
+
+        try:
+            category = Category.objects.get(id=int(category_id))
+        except Category.DoesNotExist:
+            return HttpResponse('Error - category not found.')
+        except (ValueError, TypeError):
+            return HttpResponse('Error - bad category ID.')
+
+        if not title or not url:
+            return HttpResponse('Error - missing title or url.')
+        # get_or_create() 如果沒有這 Page 就建立一個 , 所以不需要 save()
+        Page.objects.get_or_create(category=category, title=title, url=url)
+        pages = Page.objects.filter(category=category).order_by('-views')
+        return render(request, 'rango/page_listing.html', {'pages': pages})
+
 # Helper
 
 def get_category_list(max_results=0, starts_with=''):
