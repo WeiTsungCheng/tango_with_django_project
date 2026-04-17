@@ -1,6 +1,7 @@
 from django.test import TestCase
-from rango.models import Category
+from rango.models import Category, Page
 from django.urls import reverse
+from django.utils import timezone
 
 def add_category(name, views=0, likes=0):
     category = Category.objects.get_or_create(name=name)[0]
@@ -9,6 +10,11 @@ def add_category(name, views=0, likes=0):
     category.save()
 
     return  category
+
+def add_page(category, title, url, views=0, last_visit=timezone.now()):
+    page = Page.objects.get_or_create(category=category, title=title, url=url)[0]
+
+    return page
 
 class CategoryTestCase(TestCase):
 
@@ -42,5 +48,20 @@ class IndexViewTests(TestCase):
         num_categories = len(response.context['categories'])
         self.assertEqual(num_categories, 3)
 
+    def test_page_is_created_or_viewed_in_past(self):
+        category = add_category(name='Test3')
+        page = add_page(category, title='Test', url='/test/')
+        self.assertEqual(page.last_visit < timezone.now(), True)
+
+    def test_after_viewed_page_last_visit_is_renewed(self):
+        category = add_category(name='Test4')
+        page = add_page(category, title='Test2', url='/test2/')
+        before = page.last_visit
+        response = self.client.get(reverse('rango:goto'), {'page_id': page.id})
+        self.assertEqual(response.status_code, 302)
+
+        page.refresh_from_db()
+        after = page.last_visit
+        self.assertLess(before, after)
 
 

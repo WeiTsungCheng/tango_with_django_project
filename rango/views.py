@@ -371,6 +371,7 @@ class ProfileView(View):
 #     logout(request)
 #     return redirect(reverse('rango:index'))
 
+from django.utils import timezone
 
 class GotoUrlView(View):
     def dispatch(self, request, *args, **kwargs):
@@ -385,6 +386,7 @@ class GotoUrlView(View):
         except Page.DoesNotExist:
             return redirect(reverse('rango:index'))
         selected_page.views = selected_page.views + 1
+        selected_page.last_visit = timezone.now()
         selected_page.save()
         return redirect(selected_page.url)
 
